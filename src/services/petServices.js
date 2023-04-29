@@ -2,9 +2,9 @@ const { RekognitionClient, DetectCustomLabelsCommand, DetectLabelsCommand } = re
 const { DynamoDBClient, QueryCommand } = require("@aws-sdk/client-dynamodb");
 const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
 const fs = require('fs');
+const logger = require('../utils/logger');
 
 const petLabels = ['Dog', 'Cat', 'Pet'];
-const labelsID = ["loki001", "berlin001"];
 
 // Configuración de las credenciales de AWS
 const credentials = {
@@ -22,16 +22,20 @@ const getPetByImg = async (pathImage) => {
     try {
         const isPet = await detectPet(pathImage, petLabels);
         if (isPet) {
-            console.log('La imagen contiene una mascota.');
+            logger.error('La imagen contiene una mascota.');
             // const resRekognition = await detectCustomLabels(pathImage)
             const resDynamo = await searchPets(["loki001", "berlin001"]);
             return resDynamo;
         } else {
-            console.log('La imagen no contiene una mascota. ERROR');
+            logger.error('La imagen no contiene una mascota');
+            const error = new Error();
+            error.type = 'ImageNotContainPetError';
+            error.status = 404;
+            throw error;
         }
     } catch (error) {
-        console.log(error);
-        throw err;
+        logger.error(error);
+        throw error;
     }
 }
 
@@ -51,7 +55,7 @@ async function detectPet(imagePath, petLabels) {
         const labels = result.Labels.map(label => label.Name);
         return labels.some(label => petLabels.includes(label));
     } catch (err) {
-        console.log("Error al detectar etiquetas personalizadas en la imagen:", err);
+        logger.error("Error al detectar etiquetas en la imagen:", err);
         throw err;
     }
 
@@ -75,7 +79,7 @@ async function detectCustomLabels(imagePath) {
         const labels = response.CustomLabels.map(label => label.Name);
         return labels;
     } catch (err) {
-        console.log("Error al detectar etiquetas personalizadas en la imagen:", err);
+        logger.error("Error al detectar etiquetas personalizadas en la imagen:", err);
         throw err
     }
 }
@@ -103,7 +107,7 @@ async function searchPets(petId) {
         ));
         return petData;
     } catch (err) {
-        console.error('Error al buscar en DynamoDB:', err);
+        logger.error('Error al buscar en DynamoDB:', err);
         throw err;
     }
 }

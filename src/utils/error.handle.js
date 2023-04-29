@@ -1,6 +1,7 @@
-const handleHttp = (res, error = 'Ocurrió un error en el servidor') => {
-    res.status(400);
-    res.send({ error });
-}
+const handleHttp = (res, error) => {
+    const status = error.status || 400;
+    res.status(status);
+    res.json({ error: error });
+};
 
 module.exports = handleHttp;

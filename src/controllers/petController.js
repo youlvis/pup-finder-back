@@ -10,7 +10,7 @@ const PetController = {
             const result = await petService.getPetByImg(pathImage);
             res.send(result)
         } catch (error) {
-            handleHttp(res, 'ERROR_GET_PESTS')
+            handleHttp(res, error)
         } finally {
             if (pathImage) {
                 await fs.unlink(pathImage);
@@ -20,4 +20,3 @@ const PetController = {
 };
 
 module.exports = PetController;
- 
