@@ -17,5 +17,20 @@ async function loginUser(req, res) {
     }
 }
 
+async function logOutUser(req, res) {
+    try {
+        const { token } = req.body;
+        // Validar que los datos ingresados sean válidos
+        if (!token) {
+            return res.status(400).json({ error: 'se necesita tener una sesión activa para cerrar sesión' });
+        }
+        // Autenticar al usuario usando el servicio de autenticación
+        const result = await authServices.logOut(token);
+        res.send(result);
+    } catch (error) {
+        handleHttp(res, error)
+    }
+}
 
-module.exports = { loginUser };
+
+module.exports = { loginUser, logOutUser };

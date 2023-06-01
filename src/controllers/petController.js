@@ -17,6 +17,15 @@ const PetController = {
             }
         }
     },
+    recentlyReported: async (req, res) => {
+        try {
+            const result = await petService.searchPets(req.body);
+            res.send(result)
+        } catch (error) {
+            logger.error(error);
+            handleHttp(res, error);
+        }
+    },
 };
 
 module.exports = PetController;

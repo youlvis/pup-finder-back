@@ -47,7 +47,7 @@ async function signUp(email, password) {
         return result;
     } catch (err) {
         logger.error("Registration failed:", err);
-        return err;
+        throw err;
     }
 }
 

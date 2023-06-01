@@ -1,4 +1,4 @@
-const { CognitoIdentityProviderClient, InitiateAuthCommand } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient, InitiateAuthCommand, GlobalSignOutCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const logger = require('../utils/logger');
 const { generateHash } = require('../utils/getSecretHash')
 
@@ -38,12 +38,25 @@ async function login(email, password) {
         const result = await client.send(command);
         // Si la autenticación fue exitosa, retornar los tokens de acceso y actualización
         logger.info("Autenticacion exitosa")
-        return result;
+        // result.AuthenticationResult.ExpiresIn = 10;
+        return result.AuthenticationResult;
     } catch (err) {
         // Si la autenticación falló, retornar un error con el mensaje de error
         logger.error("Error al autenticarse: ", err)
-        return err;
+        throw err;
     }
 }
 
-module.exports = { login };
+async function logOut(token) {
+    try {
+        const command = new GlobalSignOutCommand({ AccessToken: token });
+        const result = await client.send(command);
+        logger.info("Sesión cerrada exitosamente.");
+        return result;
+    } catch (err) {
+        logger.error("Error al cerrar la sesión:", err);
+        throw err;
+    }
+}
+
+module.exports = { login, logOut };

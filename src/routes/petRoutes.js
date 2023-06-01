@@ -18,4 +18,7 @@ const upload = multer({
 
 router.post('/getPetLost', authenticateUser, upload.single('image'), PetController.getPetLost);
 
+router.post('/recentlyReported', PetController.recentlyReported)
+
+
 module.exports = router;

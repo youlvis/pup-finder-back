@@ -10,8 +10,10 @@ router.post('/login', authController.loginUser);
 
 router.post('/singUp', singUpController.signUpUser);
 
-router.post('/newPasword', newPassUser.newPassUser);
+router.post('/newPasword', newPassUser.newPassUser); //regitros internos
 
 router.post('/confirmSingUp', ConfirmSingUpController.confirmSignUpController);
+
+router.post('/logOutUser', authController.logOutUser);
 
 module.exports = router;

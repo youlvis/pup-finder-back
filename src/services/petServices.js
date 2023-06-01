@@ -23,8 +23,8 @@ const getPetByImg = async (pathImage) => {
         const isPet = await detectPet(pathImage, petLabels);
         if (isPet) {
             logger.error('La imagen contiene una mascota.');
-            // const resRekognition = await detectCustomLabels(pathImage)
-            const resDynamo = await searchPets(["loki001", "berlin001"]);
+            const resRekognition = await detectCustomLabels(pathImage)
+            const resDynamo = await searchPets(resRekognition);
             return resDynamo;
         } else {
             logger.error('La imagen no contiene una mascota');
@@ -114,5 +114,6 @@ async function searchPets(petId) {
 
 module.exports = {
     getPetByImg,
+    searchPets
 }
 

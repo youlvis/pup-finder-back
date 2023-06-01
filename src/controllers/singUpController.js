@@ -10,7 +10,6 @@ async function signUpUser(req, res) {
         }
         // Registrar al usuario usando el servicio de registro
         const result = await singUpServices.signUp(email, password);
-
         res.send(result);
     } catch (error) {
         handleHttp(res, error)

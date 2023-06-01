@@ -1,4 +1,4 @@
-const { CognitoIdentityProviderClient } = require("@aws-sdk/client-cognito-identity-provider");
+const { CognitoIdentityProviderClient, GetUserCommand } = require("@aws-sdk/client-cognito-identity-provider");
 const jwkToPem = require('jwk-to-pem');
 const jwt = require('jsonwebtoken');
 const request = require('request-promise-native');
@@ -14,7 +14,6 @@ const clientOptions = {
 };
 const client = new CognitoIdentityProviderClient(clientOptions);
 
-// Función para obtener las claves públicas
 const getJwks = () => {
     return new Promise((resolve, reject) => {
         request({
@@ -31,8 +30,6 @@ const getJwks = () => {
 const authenticateUser = async (req, res, next) => {
     try {
         const accessToken = req.headers.authorization.split(' ')[1];
-
-        // Obtener las claves públicas en paralelo
         const [jwks, decodedToken] = await Promise.all([
             getJwks(),
             jwt.decode(accessToken, { complete: true })
@@ -49,8 +46,16 @@ const authenticateUser = async (req, res, next) => {
             });
         });
 
-        if (user.iss !== `https://cognito-idp.${region}.amazonaws.com/${UserPoolId}`)
+        if (user.iss !== `https://cognito-idp.${region}.amazonaws.com/${UserPoolId}`) {
             throw new Error('Token de acceso no válido.');
+        }
+
+        // Verificar si el token ha sido revocado
+        const clientId = decodedToken.payload.client_id;
+        const tokenStatus = await checkTokenRevoked(accessToken, clientId);
+        if (tokenStatus === 'REVOKED') {
+            throw new Error('Token de acceso revocado.');
+        }
 
         req.user = user;
         next();
@@ -58,6 +63,22 @@ const authenticateUser = async (req, res, next) => {
         res.status(401).send({ message: 'Token inválido' });
     }
 };
+
+// Función para verificar si un token ha sido revocado
+async function checkTokenRevoked(accessToken, clientId) {
+    try {
+        const command = new GetUserCommand({ AccessToken: accessToken });
+        const response = await client.send(command);
+        const userStatus = response.UserStatus;
+        if (userStatus === 'REVOKED') {
+            return 'REVOKED';
+        }
+        return 'ACTIVE';
+    } catch (error) {
+        console.error('Error al verificar el estado del token:', error);
+        throw error;
+    }
+}
 
 module.exports = {
     authenticateUser

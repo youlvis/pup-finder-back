@@ -3,9 +3,6 @@ const cors = require("cors");
 const express = require('express');
 const morgan = require('morgan');
 const logger = require('./utils/logger');
-// const crypto = require('crypto');
-
-// const secret_key = crypto.randomBytes(32).toString('hex');
 
 //app
 const app = express();
