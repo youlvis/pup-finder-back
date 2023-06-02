@@ -23,8 +23,13 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 //routes
+app.get('/', (req, res) => {
+    res.send('¡OK!');
+});
+
 app.use('/pet', petRoute);
 app.use('/user', authRoute);
+
 
 //server
 app.listen(PORT, () => {
