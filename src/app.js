@@ -24,7 +24,7 @@ app.use(express.json());
 
 //routes
 app.get('/', (req, res) => {
-    res.send('¡OK!');
+    res.send(process.env.hello);
 });
 
 app.use('/pet', petRoute);
