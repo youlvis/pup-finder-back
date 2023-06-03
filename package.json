@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"no test specified\" ",
+    "build": "echo \"Build script placeholder\"",
+    "postbuild": "echo \"Post-build script placeholder\""
   },
   "repository": {
     "type": "git",
