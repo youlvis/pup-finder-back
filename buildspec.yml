@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "El valor de la variable es: $MY_VARIABLE"
+      # Resto de los comandos de construcción
+
+env:
+  variables:
+    MY_VARIABLE: hola # Aquí se especifica el nombre de la variable de CodePipeline
