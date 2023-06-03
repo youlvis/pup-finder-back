@@ -1,11 +1,19 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 18
   build:
     commands:
-      - echo "El valor de la variable es: $MY_VARIABLE"
-      # Resto de los comandos de construcción
+      - echo "Compiling your code..."
+      - npm install
+      - npm run build
+  post_build:
+    commands:
+      - echo "Running post-build tasks..."
+      - npm test
 
-env:
-  variables:
-    MY_VARIABLE: hola # Aquí se especifica el nombre de la variable de CodePipeline
+artifacts:
+  files:
+    - "**/*"
